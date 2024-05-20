@@ -1,0 +1,46 @@
+﻿@page "/books"
+@inject IBookService BookService
+@inject NavigationManager NavigationManager 
+@attribute [StreamRendering]
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+
+<h3>BooksList</h3>
+
+@if(books == null)
+{
+    <span>Loading...</span>
+}
+else if (books.Count == 0)
+{
+    <span>No books found.</span>
+}
+else
+{
+    <ul>
+        @foreach ( var book in books)
+        {
+           <li>@book.Name <EditBookButton Id ="book.Id"/> </li> 
+        }
+    </ul>
+}
+<button @onclick="CreateBook" class="btn btn-primary">Create Book</button>
+
+
+
+
+
+
+@code {
+    List<Book>? books =null; //this is null by default
+
+    protected override async Task OnInitializedAsync()
+    {
+        books = await BookService.GetAllBooks();
+    }
+
+    void CreateBook()
+    {
+        NavigationManager.NavigateTo("/edit-book");
+    }
+}

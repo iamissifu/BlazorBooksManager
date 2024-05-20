@@ -1,0 +1,92 @@
+﻿@page "/edit-book"
+
+@page "/edit-book/{id:int}"
+@inject IBookService BookService
+@inject NavigationManager NavigationManager
+
+@attribute [StreamRendering]
+@rendermode @(new InteractiveServerRenderMode(prerender: false)) 
+
+
+@if (Id == null)
+{
+
+    <h3>Create New Book</h3>
+
+}
+else
+{
+
+    <h3>Edit @book.Name</h3>
+
+}
+
+
+<EditForm Model="book" OnSubmit="HandleSubmit"  FormName="editBook">
+    <label>Name</label>
+    <InputText @bind-Value = "book.Name">@book.Name</InputText>
+    <button type="submit" class ="btn btn-primary">Submit</button>
+    @if(Id.HasValue)
+    {
+        <button @onclick="DeleteBook" type="button" class="btn btn-danger">Remove</button>
+
+    }
+</EditForm>
+
+
+
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+    [SupplyParameterFromForm]
+    Book book { get; set; } = new Book { Name = string.Empty };
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id.HasValue)
+        {
+            book = await BookService.GetBookById(Id.Value);
+
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+
+        if (Id == null)
+        {
+            await BookService.AddBook(book);
+
+            NavigationManager.NavigateTo("/books");
+
+        }
+        else
+        {
+            await BookService.EditBook(Id.Value, book);
+            NavigationManager.NavigateTo("/books");
+
+        }
+
+    }
+
+    async Task DeleteBook()
+    {
+        if (Id.HasValue)
+        {
+            var success = await BookService.DeleteBook(Id.Value);
+            if (success)
+            {
+                // Navigate to another page after successful deletion
+                NavigationManager.NavigateTo("/books");
+            }
+            else
+            {
+                // Optionally handle the case where the deletion failed
+                Console.WriteLine("Failed to delete the book.");
+            }
+        }
+    }
+
+}
