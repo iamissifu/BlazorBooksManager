@@ -6,35 +6,46 @@
 
 @attribute [StreamRendering]
 @rendermode @(new InteractiveServerRenderMode(prerender: false)) 
-
+<div class="background-grad p-5 m-5">
 
 @if (Id == null)
 {
 
-    <h3>Create New Book</h3>
+    <h5>Add New Book</h5>
 
 }
 else
 {
 
-    <h3>Edit @book.Name</h3>
-
-}
-
-
-<EditForm Model="book" OnSubmit="HandleSubmit"  FormName="editBook">
-    <label>Name</label>
-    <InputText @bind-Value = "book.Name">@book.Name</InputText>
-    <button type="submit" class ="btn btn-primary">Submit</button>
-    @if(Id.HasValue)
-    {
-        <button @onclick="DeleteBook" type="button" class="btn btn-danger">Remove</button>
+        <h5>
+            Edit book title:<span style="color:#263e82; padding-left:5px; font-style:italic; font-size: 1.5rem"> @book.Name</span>
+        </h5>
 
     }
+
+
+<EditForm class="row g-3" Model="book" OnSubmit="HandleSubmit" FormName="editBook">
+
+
+           <div class="col-auto">
+             <label>Title</label>
+            <InputText @bind-Value = "book.Name">@book.Name</InputText>
+           </div>
+   
+            <div class="col-auto">
+                <button type="submit" class ="btn btn-primary">Submit</button>
+            </div>
+
+            @if(Id.HasValue)
+            {
+                 <div class="col-auto">
+                <button @onclick="DeleteBook" type="button" class="btn btn-danger">Remove</button>
+                </div>
+            }
 </EditForm>
 
 
-
+</div>
 
 @code {
     [Parameter]
